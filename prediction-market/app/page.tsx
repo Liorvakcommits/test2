@@ -1,10 +1,14 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
-import { PredictionCard } from "@/components/PredictionCard"
+import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { PredictionCard } from "@/components/PredictionCard"
 import { PromoCards } from "@/components/PromoCards"
 import { MarketCategories } from "@/components/MarketCategories"
+import { LayoutGrid, LineChart, Trophy } from "lucide-react"
+import { DepositDialog } from "@/components/DepositDialog" // Ensure this path is correct or update it to the correct path
 
 const mockMarkets = [
   {
@@ -93,19 +97,60 @@ const mockMarkets = [
 
 export default function Home() {
   const [visibleMarkets, setVisibleMarkets] = useState(4)
+  const [isDepositOpen, setIsDepositOpen] = useState(false)
 
   const handleShowMore = () => {
     setVisibleMarkets((prev) => Math.min(prev + 4, mockMarkets.length))
   }
 
+  const openDepositDialog = () => setIsDepositOpen(true)
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50/50">
-      <div className="container mx-auto px-4 py-3">
+    <div className="min-h-screen bg-white">
+      <header className="bg-white border-b">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-8">
+              <Link href="/" className="text-xl font-bold flex items-end relative">
+                MarkeTrends
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full absolute -bottom-0.5 -right-2"></span>
+              </Link>
+              <div className="w-[320px]">
+                <Input type="search" placeholder="Search markets..." className="w-full" />
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Button variant="ghost">
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Markets
+                </Button>
+                <Button variant="ghost">
+                  <LineChart className="h-4 w-4 mr-2" />
+                  Charts
+                </Button>
+                <Button variant="ghost">
+                  <Trophy className="h-4 w-4 mr-2" />
+                  Rewards
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 border-l pl-4">
+                <div className="text-right">
+                  <div className="font-medium">$1,234.56</div>
+                  <div className="text-sm text-muted-foreground">$789.10</div>
+                </div>
+                <Button onClick={openDepositDialog}>Deposit</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main className="container mx-auto px-4 py-8">
         <PromoCards />
         <div className="mt-2 mb-3">
           <MarketCategories />
         </div>
-        <h1 className="text-2xl font-bold mb-6">Popular Markets</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-900">Popular Markets</h1>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {mockMarkets.slice(0, visibleMarkets).map((market) => (
             <PredictionCard key={market.id} {...market} />
@@ -122,8 +167,11 @@ export default function Home() {
             </Button>
           </div>
         )}
-      </div>
+      </main>
+      <DepositDialog open={isDepositOpen} onOpenChange={setIsDepositOpen} balance="789.10" />
     </div>
   )
 }
+
+
 
