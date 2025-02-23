@@ -8,7 +8,8 @@ import { PredictionCard } from "@/components/PredictionCard"
 import { PromoCards } from "@/components/PromoCards"
 import { MarketCategories } from "@/components/MarketCategories"
 import { LayoutGrid, LineChart, Trophy } from "lucide-react"
-import { DepositDialog } from "@/components/DepositDialog" // Ensure this path is correct or update it to the correct path
+import { DepositDialog } from "../components/deposit/DepositDialog";
+
 
 const mockMarkets = [
   {

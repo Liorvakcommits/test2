@@ -1,24 +1,34 @@
-"use client"
+"use client"; // מבטיח שהקובץ רץ בצד הלקוח
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Copy } from "lucide-react"
-import Image from "next/image"
+import React, { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Copy } from "lucide-react";
+import Image from "next/image";
 
 interface DepositDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  balance: string
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  balance: string;
 }
 
 export function DepositDialog({ open, onOpenChange, balance }: DepositDialogProps) {
-  const depositAddress = "0x362f9359f56efb48bbc1f581261c391ED51808cf"
+  const [selectedToken, setSelectedToken] = useState("usdc");
+  const [selectedChain, setSelectedChain] = useState("polygon");
+
+  const depositAddress = "0x362f9359f56efb48bbc1f581261c391ED51808cf";
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(depositAddress)
-  }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(depositAddress).then(() => {
+        alert("Address copied to clipboard!");
+      });
+    } else {
+      console.warn("Clipboard API not supported.");
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -44,24 +54,27 @@ export function DepositDialog({ open, onOpenChange, balance }: DepositDialogProp
 
           <div className="space-y-2">
             <label className="text-sm font-medium">TOKEN</label>
-            <Select defaultValue="usdc">
+            <Select value={selectedToken} onValueChange={setSelectedToken}>
               <SelectTrigger>
                 <SelectValue placeholder="Select token" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="usdc">USDC</SelectItem>
+                <SelectItem value="eth">Ethereum (ETH)</SelectItem>
+                <SelectItem value="matic">Polygon (MATIC)</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium">CHAIN</label>
-            <Select defaultValue="polygon">
+            <Select value={selectedChain} onValueChange={setSelectedChain}>
               <SelectTrigger>
                 <SelectValue placeholder="Select chain" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="polygon">Polygon</SelectItem>
+                <SelectItem value="ethereum">Ethereum</SelectItem>
               </SelectContent>
             </Select>
             <span className="text-sm text-gray-500">Minimum deposit: $10.00</span>
@@ -80,7 +93,7 @@ export function DepositDialog({ open, onOpenChange, balance }: DepositDialogProp
           <div className="flex justify-center">
             <div className="bg-white p-4 rounded-lg">
               <Image
-                src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=0x362f9359f56efb48bbc1f581261c391ED51808cf"
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${depositAddress}`}
                 alt="Deposit QR Code"
                 width={200}
                 height={200}
@@ -90,12 +103,12 @@ export function DepositDialog({ open, onOpenChange, balance }: DepositDialogProp
           </div>
 
           <p className="text-sm text-gray-500 text-center">
-            Send in greater than $10.00 of the accepted token to the address above and it will auto swap to USDC in your
+            Send more than $10.00 of the accepted token to the address above, and it will auto swap to USDC in your
             Polymarket wallet, minus fees. Terms & conditions apply.
           </p>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
